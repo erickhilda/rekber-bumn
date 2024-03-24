@@ -23,21 +23,16 @@ const (
 func main() {
 	client := &http.Client{}
 
-	// Get CSRF token
 	csrfToken := getCSRFToken(client, jobURL)
 	fmt.Println("CSRF token:", csrfToken)
 
-	// Request all jobs
-	// jobs := requestAllJobs(client, csrfToken)
-	// fmt.Println("Total jobs:", len(jobs.Data.Result))
+	jobs := requestAllJobs(client, csrfToken)
+	fmt.Println("Total jobs:", len(jobs.Data.Result))
 
-	// Write jobs data to CSV
-	// parseToCSV(jobs.Data.Result, "data/all_jobs.csv")
+	parseToCSV(jobs.Data.Result, "data/all_jobs.csv")
 
-	// Get details for each job
 	details := getAllDetails("data/all_jobs.csv", client, csrfToken)
 
-	// Write details data to CSV
 	var detailsData []interface{}
 	for _, detail := range details {
 		detailsData = append(detailsData, detail)
@@ -154,8 +149,8 @@ func getAllDetails(csvPath string, client *http.Client, csrfToken string) []map[
 	if !scanner.Scan() {
 		fmt.Println("Error reading CSV header:", scanner.Err())
 	}
+
 	header := strings.Split(scanner.Text(), ",")
-	fmt.Println("Header: ", header)
 	columnName := "vacancy_id"
 	columnIndex := getColumnIndex(header, columnName)
 	if columnIndex == -1 {
